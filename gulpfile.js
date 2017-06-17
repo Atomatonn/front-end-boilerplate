@@ -14,8 +14,12 @@ var gulp = require('gulp'),
     });
 
 //Css Minification and concat
+    var cssFiles = './css/*.css',
+        cssDest = 'dist/css';
+
     gulp.task('minify-css', function() {
-        return gulp.src('./css/*.css')
+        return gulp.src(cssFiles)
+            .pipe(plugins.sourcemaps.init())
             .pipe(plugins.autoprefixer({
                browsers: ['last 2 versions'],
                cascade: false
@@ -24,7 +28,8 @@ var gulp = require('gulp'),
             .pipe(gulp.dest('./dist/css'))
             .pipe(plugins.cleanCss())
             .pipe(plugins.rename({suffix: '.min'}))
-            .pipe(gulp.dest('./dist/css'))
+            .pipe(plugins.sourcemaps.write())
+            .pipe(gulp.dest(cssDest))
             .pipe(plugins.browserSync.reload({stream: true}));
     });
 
@@ -34,12 +39,14 @@ var gulp = require('gulp'),
 
         gulp.task('scripts', function() {
             return gulp.src(jsFiles)
-                .pipe(plugins.concat('scripts.js'))
-                .pipe(gulp.dest(jsDest))
-                .pipe(plugins.rename('scripts.min.js'))
-                .pipe(plugins.uglify())
-                .pipe(gulp.dest(jsDest))
-                .pipe(plugins.browserSync.reload({stream: true}));
+            .pipe(plugins.sourcemaps.init())
+            .pipe(plugins.concat('scripts.js'))
+            .pipe(gulp.dest(jsDest))
+            .pipe(plugins.rename('scripts.min.js'))
+            .pipe(plugins.uglify())
+            .pipe(plugins.sourcemaps.write())
+            .pipe(gulp.dest(jsDest))
+            .pipe(plugins.browserSync.reload({stream: true}));
         });
 
 // Image Minification
