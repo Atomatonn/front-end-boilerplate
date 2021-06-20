@@ -34,4 +34,4 @@ bower_componenets/
 .sass-cache
 *.css.map
 build/
-dist/
+

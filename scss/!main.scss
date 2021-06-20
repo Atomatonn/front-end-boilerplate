@@ -1,0 +1,30 @@
+// HELPERS
+@import 'helpers/reset.scss';
+@import 'helpers/variables.scss';
+@import 'helpers/utility.scss';
+
+// GLOBAL
+@import 'base/global.scss';
+@import 'base/typography.scss';
+
+// LAYOUT
+@import 'layout/grid.scss';
+@import 'layout/footer.scss';
+
+// COMPONENTS
+@import 'components/filter.scss';
+@import 'components/navigation.scss';
+@import 'components/forms.scss';
+@import 'components/header.scss';
+@import 'components/slider.scss';
+
+// PAGES
+@import 'pages/home.scss';
+@import 'pages/gallery.scss';
+
+// VENDORS
+@import 'vendors/slick.scss';
+@import 'vendors/slick-theme.scss';
+@import 'vendors/slideout.scss';
+@import 'vendors/animate.scss';
+
