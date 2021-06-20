@@ -2,12 +2,67 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title></title>
+        <title>Front-end Boilerplate</title>
+
+        <meta name="description" content="A starting template for static front-end projects + gulp">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="stylesheet" href="./dist/css/styles.min.css">
+        <link rel="icon" type="image/png" href="./dist/img/General/favicon.ico">
+        <script src="https://www.google.com/recaptcha/api.js?render=SECRET_KEY_HERE"></script>
     </head>
     <body>
-        test
+        
+        
+        <!--Working contact form with recaptcha-->
+        <form id="contact-form" class="contact-form__form js-contact-form" method="post" action="sendMail.php">
+            <input id="this_title" type="text" name="this_title" value="" />
+            <div class="l-flex">
+                <div class="contact-form__field contact-form__field--flex">
+                    <input id="name" type="text" name="name" placeholder="name" class="contact-form__input" autocomplete="false" required>
+                </div>
+
+                <div class="contact-form__field contact-form__field--flex">
+                    <input id="phone" type="tel" placeholder="(555)-555-5555" name="phone" class="contact-form__input" autocomplete="false" required>
+                </div>
+            </div>
+
+            <div class="contact-form__field">
+                <input id="email" type="text" name="email" placeholder="email" class="contact-form__input" autocomplete="false" required>
+            </div>
+            <div class="contact-form__field">
+                <textarea id="message" class="contact-form__input contact-form__input--textarea" name="message" placeholder="Message" rows="8" cols="80" autocomplete="false" required></textarea>
+            </div>
+            <div class="contact-form__field">
+                <input class="contact-form__input" type="submit" value="Submit" name="post">
+
+                <p>This site is protected by reCAPTCHA and the Google <a href="https://policies.google.com/privacy">Privacy Policy</a> and <a href="https://policies.google.com/terms">Terms of Service</a> apply.</p>
+            </div>
+
+
+
+            <div class="contact-success" style="display: none">
+                <p>Your message was sent.</p>
+            </div>
+
+            <!-- hidden reCaptcha token input -->
+            <input type="hidden" id="token" name="token">
+        </form>
+
+        <script>
+            $(document).ready(function() {
+                setInterval(function() {
+                    grecaptcha.ready(function() {
+                        grecaptcha.execute('SECRET_KEY_HERE', {
+                            action: 'homepage'
+                        }).then(function(token) {
+                            // console.log(token);
+                            document.getElementById("token").value = token;
+                        });
+                    });
+                }, 3000);
+            });
+        </script>
 
         <script src="./node_modules/jquery/dist/jquery.min.js"></script>
         <script src="./dist/js/main.min.js"></script>
