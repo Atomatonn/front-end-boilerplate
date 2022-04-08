@@ -1,106 +1,59 @@
-// Load all gulp plugins
-var gulp = require('gulp'),
-    plugins = require('gulp-load-plugins')({
-        pattern: '*'
-    });
+// load plugins
+const { src, dest, watch, series } = require('gulp');
+const sass = require('gulp-sass')(require('sass'));
+const prefix = require('gulp-autoprefixer');
+const postcss = require('postcss');
+const cleanCSS = require('gulp-clean-css');
+const terser = require('gulp-terser');
+const imagemin = require('gulp-imagemin');
+const imagewebp = require('gulp-webp');
+const rename = require('gulp-rename');
+const concat = require('gulp-concat');
+const browsersync = require('browser-sync').create();
 
-//Sass Compilation
-function sass(done) {
-    gulp.src('./scss/!main.scss')
-        .pipe(plugins.plumber())
-        .pipe(plugins.sass({
-            errLogToConsole: true
-        }))
-        .pipe(gulp.dest('./css'))
-        .pipe(plugins.browserSync.reload({
-            stream: true
-        }));
-    done();
-};
+// compile sass into css task 
+function scssTask(){
+    return src('./scss/!main.scss', {sourcemaps: true})
+        .pipe(sass())
+        .pipe(rename('styles.css'))
+        .pipe(cleanCSS({compatibility: 'ie8'}))
+        .pipe(dest('./dist/css', {sourcemaps: '.'}));
+}
 
-//Css Minification and concat
-var cssFiles = './css/*.css',
-    cssDest = './dist/css';
 
-function css(done) {
-    return gulp.src(cssFiles)
-        .pipe(plugins.plumber())
-        .pipe(plugins.sourcemaps.init())
-        .pipe(plugins.concat('styles.css'))
-        .pipe(gulp.dest(cssDest))
-        .pipe(plugins.cleanCss())
-        .pipe(plugins.rename({
-            suffix: '.min'
-        }))
-        .pipe(plugins.sourcemaps.write())
-        .pipe(gulp.dest(cssDest))
-        .pipe(plugins.browserSync.reload({
-            stream: true
-        }));
-    done();
-};
+// Javascript task
+function jsTask(){
+    return src('./js/*.js', {sourcemaps: true})
+        .pipe(concat('scripts.js'))
+        .pipe(terser())
+        .pipe(dest('./dist/scripts', {sourcemaps: '.'}));
+}
 
-// JS Concat and uglify
-var jsFiles = './js/*.js',
-    jsDest = './dist/scripts';
-
-function js(done) {
-    return gulp.src(jsFiles)
-        .pipe(plugins.plumber())
-        .pipe(plugins.terser())
-        .pipe(plugins.sourcemaps.init())
-        .pipe(plugins.concat('scripts.js'))
-        .pipe(gulp.dest(jsDest))
-        .pipe(plugins.rename('scripts.min.js'))
-        .pipe(plugins.sourcemaps.write())
-        .pipe(gulp.dest(jsDest))
-        .pipe(plugins.browserSync.reload({
-            stream: true
-        }));
-    done();
-};
-
-// Image Minification
-function image_min(done) {
-    gulp.src('./img/**/*')
-        .pipe(plugins.plumber())
-        .pipe(plugins.imagemin())
-        .pipe(gulp.dest('./dist/img'))
-        .pipe(plugins.browserSync.reload({
-            stream: true
-        }));
-
-    done();
-};
-
-// A simple task to reload the page
-function reload() {
-    plugins.browserSync.reload();
-};
-
-function watch_files() {
-    plugins.browserSync.init({
+// Browsersync tasks
+function browsersyncServer(cb){
+    browsersync.init({
         server: {
-            baseDir: './'
-        },
-        online: true
+            baseDir: '.'
+        }
     });
-    gulp.watch('./scss/**/*.scss', sass);
-    gulp.watch('./css/*.css', css);
-    gulp.watch('./js/*.js', js);
-    gulp.watch('./dist/js/*.js', reload);
-    gulp.watch('./dist/css/*.css', reload);
-    gulp.watch("./*.html").on('change', reload);
-};
+    cb();
+}
 
-gulp.task("sass", sass);
+function browsersyncReload(cb){
+    browsersync.reload();
+    cb();
+}
 
-gulp.task("css", css);
+// Watch Task
+function watchTasks(){
+    watch('*.html', browsersyncReload);
+    watch(['scss/**/*.scss', 'js/**/*.js'], series(scssTask, jsTask, browsersyncReload));
+}
 
-gulp.task("js", js);
-
-gulp.task("image_min", image_min);
-
-gulp.task('default', gulp.parallel(sass, css, js, image_min, watch_files));
-
-gulp.task('watch', gulp.series(watch_files));
+// Default Gulp task
+exports.default = series(
+    scssTask,
+    jsTask,
+    browsersyncServer,
+    watchTasks
+);

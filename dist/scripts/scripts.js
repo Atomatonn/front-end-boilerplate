@@ -1,1 +1,2 @@
 var form_data,form=$(".js-contact-form"),message=$(".contact-success");function done_func(e){message.fadeIn(),message.html(e),setTimeout((function(){message.fadeOut()}),1e4),form.find('input:not([type="submit"]), textarea').val("")}function fail_func(e){message.fadeIn(),message.html(e.responseText),setTimeout((function(){message.fadeOut()}),1e4)}form.submit((function(e){e.preventDefault(),form_data=$(this).serialize(),$.ajax({type:"POST",url:form.attr("action"),data:form_data}).done(done_func).fail(fail_func)}));
+//# sourceMappingURL=scripts.js.map
